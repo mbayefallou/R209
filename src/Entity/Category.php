@@ -24,10 +24,14 @@ class Category
     #[ORM\OneToMany(targetEntity: Veille::class, mappedBy: 'category')]
     private Collection $veilles;
 
+    #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'category')]
+    private Collection $experiences;
+
     public function __construct()
     {
         $this->niveaux = new ArrayCollection();
         $this->veilles = new ArrayCollection();
+        $this->experiences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -110,4 +114,34 @@ class Category
     {
         return $this->getNom();
         }
+
+    /**
+     * @return Collection<int, Experience>
+     */
+    public function getExperiences(): Collection
+    {
+        return $this->experiences;
+    }
+
+    public function addExperience(Experience $experience): static
+    {
+        if (!$this->experiences->contains($experience)) {
+            $this->experiences->add($experience);
+            $experience->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExperience(Experience $experience): static
+    {
+        if ($this->experiences->removeElement($experience)) {
+            // set the owning side to null (unless already changed)
+            if ($experience->getCategory() === $this) {
+                $experience->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
 }
